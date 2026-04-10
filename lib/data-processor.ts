@@ -377,24 +377,12 @@ export function filterData(
         // Leaf record - include it unless its parent is already included as an aggregated record
         if (selectedLevel1Segments.length > 0) {
           if (isRegionalSegmentType) {
-            const regionalGeographies = ['North America', 'Europe', 'Asia Pacific', 'Latin America', 'Middle East & Africa', 'Middle East', 'Africa', 'ASEAN', 'SAARC Region', 'CIS Region', 'Global']
-            const selectedAreGeographies = selectedLevel1Segments.some(seg => regionalGeographies.includes(seg))
-            const selectedAreSegments = selectedLevel1Segments.some(seg => !regionalGeographies.includes(seg))
-
-            if (selectedAreGeographies && !selectedAreSegments) {
-              const belongsToSelectedGeography = selectedLevel1Segments.some(selectedSeg =>
-                record.geography === selectedSeg
-              )
-              if (!belongsToSelectedGeography) {
-                return false
-              }
-            } else {
-              const belongsToSelectedSegment = selectedLevel1Segments.some(selectedSeg =>
-                record.segment === selectedSeg
-              )
-              if (!belongsToSelectedSegment) {
-                return false
-              }
+            // For regional segment types, match by segment name directly
+            const belongsToSelectedSegment = selectedLevel1Segments.some(selectedSeg =>
+              record.segment === selectedSeg || record.geography === selectedSeg
+            )
+            if (!belongsToSelectedSegment) {
+              return false
             }
           } else {
             // Check if this leaf's parent is one of the explicitly selected segments
