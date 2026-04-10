@@ -85,12 +85,17 @@ export function FilterPresets() {
   }, [data])
 
   const applyPreset = (preset: FilterPreset) => {
-    // Merge preset filters with current filters
     const newFilters: Partial<FilterState> = { ...preset.filters }
 
-    // Clear advancedSegments to prevent stale selections from interfering
-    // Presets use the segments array, not advancedSegments
-    ;(newFilters as any).advancedSegments = []
+    // Build advancedSegments from the preset's segments + segmentType
+    // Charts rely on advancedSegments for data filtering
+    const segType = newFilters.segmentType || filters.segmentType || ''
+    const segs = newFilters.segments || []
+    ;(newFilters as any).advancedSegments = segs.map((segment: string) => ({
+      type: segType,
+      segment,
+      id: `${segType}::${segment}`
+    }))
 
     // If preset doesn't specify certain filters, keep current ones
     if (!newFilters.geographies && filters.geographies.length > 0) {
