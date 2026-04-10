@@ -1,63 +1,32 @@
 {
-  "Global": {
-    "By Type": {
-      "Sub-Normothermic Perfusion (20–34°C)": {},
-      "Warm or Normothermic Perfusion (35–37°C)": {}
+  "U.S.": {
+    "By Customer Type": {
+      "Individual Pet Owners": {},
+      "Corporate Employee Relocations": {},
+      "Military & Government": {},
+      "Diplomats / Expats / Foreign Nationals": {},
+      "Animal Breeders & Kennels": {},
+      "Animal Rescue & Rehoming Organizations": {},
+      "Others (Zoos, Sanctuaries & Research Institutions, etc.)": {}
     },
-    "By Organ Type": {
-      "Liver": {},
-      "Heart": {},
-      "Lung": {},
-      "Kidney": {},
-      "Others (Pancreas, Small bowel / Intestine, Composite Tissues / Limb Perfusion (emerging use cases))": {}
+    "By Pet Type": {
+      "Dogs": {},
+      "Cats": {},
+      "Birds": {},
+      "Small Mammals (Rabbits, Hamsters, Ferrets)": {},
+      "Reptiles & Amphibians": {},
+      "Others (Fish & Aquatic Species, Exotic Animals, etc.)": {}
     },
-    "Application / Use Case": {
-      "Organ Preservation": {},
-      "Viability Assessment": {},
-      "Physiologic Transport": {},
-      "Reconditioning Marginal Organs": {},
-      "Others (Research Use / Protocol development)": {}
-    },
-    "By End User": {
-      "Hospitals & Clinics": {},
-      "Specialty Clinic/Centers": {},
-      "Transplant Centers": {},
-      "Others (Research Institutes/Centers, Organ Procurement Organizations, etc.)": {}
+    "By Move Type": {
+      "Domestic (Interstate) Pet Transport": {},
+      "International Relocation (Import/Export)": {}
     },
     "By Region": {
-      "North America": {
-        "U.S.": {},
-        "Canada": {}
-      },
-      "Europe": {
-        "U.K.": {},
-        "Germany": {},
-        "Italy": {},
-        "France": {},
-        "Spain": {},
-        "Russia": {},
-        "Rest of Europe": {}
-      },
-      "Asia Pacific": {
-        "China": {},
-        "India": {},
-        "Japan": {},
-        "South Korea": {},
-        "ASEAN": {},
-        "Australia": {},
-        "Rest of Asia Pacific": {}
-      },
-      "Latin America": {
-        "Brazil": {},
-        "Argentina": {},
-        "Mexico": {},
-        "Rest of Latin America": {}
-      },
-      "Middle East & Africa": {
-        "GCC": {},
-        "South Africa": {},
-        "Rest of Middle East & Africa": {}
-      }
+      "Northeast": {},
+      "Southeast": {},
+      "Midwest": {},
+      "West": {},
+      "Southwest": {}
     }
   }
 }

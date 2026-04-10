@@ -29,19 +29,17 @@ export function YearRangeSlider() {
   }
 
   const setPredefinedRange = (range: 'historical' | 'forecast' | 'all') => {
-    const { historical_years, forecast_years } = data.metadata
     switch (range) {
       case 'historical':
-        if (historical_years?.length) {
-          updateFilters({ yearRange: [historical_years[0], historical_years[historical_years.length - 1]] })
-        }
+        // Historical = base year only (the first/start year of the dataset)
+        updateFilters({ yearRange: [start_year, start_year] })
         break
       case 'forecast':
-        if (forecast_years?.length) {
-          updateFilters({ yearRange: [forecast_years[0], forecast_years[forecast_years.length - 1]] })
-        }
+        // Forecast = all years after the base/start year
+        updateFilters({ yearRange: [start_year + 1, forecast_year] })
         break
       case 'all':
+        // All Years = full range
         updateFilters({ yearRange: [start_year, forecast_year] })
         break
     }
@@ -57,19 +55,19 @@ export function YearRangeSlider() {
       <div className="flex gap-2">
         <button
           onClick={() => setPredefinedRange('historical')}
-          className="px-3 py-1 text-xs bg-gray-100 text-black rounded hover:bg-gray-200"
+          className={`px-3 py-1 text-xs rounded ${minYear === start_year && maxYear === start_year ? 'bg-gray-400 text-white' : 'bg-gray-100 text-black hover:bg-gray-200'}`}
         >
           Historical
         </button>
         <button
           onClick={() => setPredefinedRange('forecast')}
-          className="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
+          className={`px-3 py-1 text-xs rounded ${minYear === start_year + 1 && maxYear === forecast_year ? 'bg-blue-500 text-white' : 'bg-blue-100 text-blue-700 hover:bg-blue-200'}`}
         >
           Forecast
         </button>
         <button
           onClick={() => setPredefinedRange('all')}
-          className="px-3 py-1 text-xs bg-green-100 text-green-700 rounded hover:bg-green-200"
+          className={`px-3 py-1 text-xs rounded ${minYear === start_year && maxYear === forecast_year ? 'bg-green-500 text-white' : 'bg-green-100 text-green-700 hover:bg-green-200'}`}
         >
           All Years
         </button>
@@ -120,7 +118,7 @@ export function YearRangeSlider() {
 
       {/* Base Year Indicator */}
       <div className="text-xs text-black text-center">
-        Base Year: <span className="font-medium text-black">2025</span>
+        Base Year: <span className="font-medium text-black">{start_year}</span>
       </div>
     </div>
   )

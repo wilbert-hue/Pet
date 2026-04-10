@@ -1278,9 +1278,11 @@ export async function processJsonDataAsync(
         const byRegionData = geoData['By Region']
         if (byRegionData && typeof byRegionData === 'object') {
           // Extract region names (first level keys under "By Region")
+          // Only treat as a geographic region if it has child items (non-empty object).
+          // Empty {} leaf nodes are segment values, not geographic sub-units.
           const regions = Object.keys(byRegionData).filter(key => {
             const value = byRegionData[key]
-            return value && typeof value === 'object' && !Array.isArray(value)
+            return value && typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length > 0
           })
           regions.forEach(region => {
             if (!regionGeographies.includes(region) && !geographies.includes(region)) {
@@ -1334,10 +1336,23 @@ export async function processJsonDataAsync(
     }
     console.log(`Found ${segmentTypes.size} segment types:`, Array.from(segmentTypes))
 
-    // Remove "By Region" (and similar) from segment types - these are geography dimensions, not segments
-    segmentTypes.delete('By Region')
-    segmentTypes.delete('By State')
-    segmentTypes.delete('By Country')
+    // Remove "By Region" (and similar) from segment types ONLY if the regions within
+    // have children (i.e., they act as a geographic hierarchy like North America > U.S.).
+    // If all regions are empty leaf nodes {}, keep "By Region" as a regular segment type.
+    const isRegionTypeGeographic = (segType: string): boolean => {
+      return Object.values(structureData).some((geo: any) => {
+        const segData = geo?.[segType]
+        if (!segData || typeof segData !== 'object') return false
+        // If at least one child has sub-items, this is a geographic hierarchy
+        return Object.values(segData).some(
+          (val: any) => val && typeof val === 'object' && !Array.isArray(val) && Object.keys(val).length > 0
+        )
+      })
+    }
+
+    if (isRegionTypeGeographic('By Region')) segmentTypes.delete('By Region')
+    if (isRegionTypeGeographic('By State'))  segmentTypes.delete('By State')
+    if (isRegionTypeGeographic('By Country')) segmentTypes.delete('By Country')
     console.log(`Segment types after removing geography types:`, Array.from(segmentTypes))
 
     // Filter out geographies that only exist in segmentation structure but have no actual data
@@ -1397,8 +1412,14 @@ export async function processJsonDataAsync(
 
     // Process "By Region" data separately for geography-based records
     // These records are NOT added to segment types but provide data for region/country geographies
+    // IMPORTANT: Skip any type already processed as a regular segment type to avoid double-counting
     const geoSegmentTypes = ['By Region', 'By State', 'By Country']
     for (const geoSegType of geoSegmentTypes) {
+      // Skip if already processed as a regular segment (flat/leaf regions like U.S. sub-regions)
+      if (segmentTypes.has(geoSegType)) {
+        console.log(`Skipping geography loop for ${geoSegType} — already processed as a regular segment type`)
+        continue
+      }
       // Check if this geo segment type exists in the structure data
       const hasGeoSegType = Object.values(structureData).some(
         (geo: any) => geo && typeof geo === 'object' && geo[geoSegType]
@@ -1435,7 +1456,12 @@ export async function processJsonDataAsync(
         volumeRecords.push(...volumeRecs)
       }
       // Also process "By Region" geography records for volume
+      // IMPORTANT: Skip any type already processed as a regular segment type to avoid double-counting
       for (const geoSegType of geoSegmentTypes) {
+        if (segmentTypes.has(geoSegType)) {
+          console.log(`Skipping volume geography loop for ${geoSegType} — already processed as a regular segment type`)
+          continue
+        }
         const hasGeoSegType = Object.values(structureData).some(
           (geo: any) => geo && typeof geo === 'object' && geo[geoSegType]
         )
@@ -1472,7 +1498,7 @@ export async function processJsonDataAsync(
     
     // Build metadata
     const metadata: Metadata = {
-      market_name: 'Normothermic Machine Perfusion Market',
+      market_name: 'Pets Moving Market',
       market_type: 'Market Analysis',
       industry: 'Healthcare & Pharmaceuticals',
       years: allYears,
