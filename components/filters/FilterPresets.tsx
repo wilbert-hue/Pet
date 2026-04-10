@@ -42,21 +42,21 @@ export function FilterPresets() {
       {
         id: 'top-markets',
         name: 'Top Markets',
-        description: `Top 3 regions by ${startYear} market size`,
+        description: `Top 3 segments by ${startYear} market value`,
         icon: <Globe className="h-4 w-4" />,
         filters: topMarketFilters
       },
       {
         id: 'growth-leaders',
         name: 'Growth Leaders',
-        description: 'Top 2 regions with highest CAGR',
+        description: 'Top 3 segments with highest CAGR',
         icon: <TrendingUp className="h-4 w-4" />,
         filters: growthLeadersFilters
       },
       {
         id: 'emerging-markets',
         name: 'Emerging Markets',
-        description: 'Top 5 countries with highest CAGR',
+        description: 'Regional breakdown by U.S. sub-market',
         icon: <Target className="h-4 w-4" />,
         filters: emergingMarketsFilters
       },
