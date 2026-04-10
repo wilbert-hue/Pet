@@ -112,7 +112,8 @@ export function getTopRegionsByMarketValue(
 }
 
 /**
- * Get all first-level segments for a given segment type
+ * Get all first-level segments for a given segment type.
+ * For flat (non-hierarchical) segment types, returns all items.
  */
 export function getFirstLevelSegments(
   data: ComparisonData | null,
@@ -125,6 +126,11 @@ export function getFirstLevelSegments(
 
   const hierarchy = segmentDimension.hierarchy || {}
   const allSegments = segmentDimension.items || []
+
+  // If no hierarchy exists, return all items directly (flat segment type)
+  if (Object.keys(hierarchy).length === 0) {
+    return [...allSegments]
+  }
 
   const allChildren = new Set(Object.values(hierarchy).flat())
   const firstLevelSegments: string[] = []

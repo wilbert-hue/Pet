@@ -7,7 +7,9 @@ import { FilterState } from '@/lib/types'
 import { 
   createTopMarketFilters, 
   createGrowthLeadersFilters, 
-  createEmergingMarketsFilters 
+  createEmergingMarketsFilters,
+  getFirstSegmentType,
+  getFirstLevelSegments
 } from '@/lib/preset-utils'
 
 interface FilterPreset {
@@ -63,13 +65,21 @@ export function FilterPresets() {
       {
         id: 'full-comparison',
         name: 'Full Comparison',
-        description: 'All regions and segments matrix view',
+        description: 'All segments comparison view',
         icon: <BarChart3 className="h-4 w-4" />,
-        filters: {
-          viewMode: 'matrix',
-          yearRange: [startYear, endYear],
-          dataType: 'value',
-        }
+        filters: (() => {
+          const segType = getFirstSegmentType(data)
+          const segs = segType ? getFirstLevelSegments(data, segType) : []
+          const allGeos = data?.dimensions.geographies.all_geographies || []
+          return {
+            viewMode: 'segment-mode' as const,
+            geographies: allGeos,
+            segments: segs,
+            segmentType: segType || 'By Customer Type',
+            yearRange: [startYear, endYear] as [number, number],
+            dataType: 'value' as const,
+          }
+        })()
       },
     ]
   }, [data])
