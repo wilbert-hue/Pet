@@ -113,7 +113,7 @@ export function getTopRegionsByMarketValue(
 
 /**
  * Get all first-level segments for a given segment type.
- * For flat (non-hierarchical) segment types, returns all items.
+ * Falls back to extracting unique segment names from actual data records.
  */
 export function getFirstLevelSegments(
   data: ComparisonData | null,
@@ -127,27 +127,39 @@ export function getFirstLevelSegments(
   const hierarchy = segmentDimension.hierarchy || {}
   const allSegments = segmentDimension.items || []
 
-  // If no hierarchy exists, return all items directly (flat segment type)
-  if (Object.keys(hierarchy).length === 0) {
+  // If no hierarchy, return items directly
+  if (Object.keys(hierarchy).length === 0 && allSegments.length > 0) {
     return [...allSegments]
   }
 
-  const allChildren = new Set(Object.values(hierarchy).flat())
-  const firstLevelSegments: string[] = []
-
-  Object.keys(hierarchy).forEach(parent => {
-    if (!allChildren.has(parent) && hierarchy[parent].length > 0) {
-      firstLevelSegments.push(parent)
+  // For hierarchical segment types, get the leaf segments (children) not the parent keys
+  // e.g. for "By Region" with hierarchy { "U.S.": ["Northeast", "Southeast", ...] },
+  // return the children, not "U.S."
+  const allChildren = new Set<string>()
+  Object.values(hierarchy).forEach((children: any) => {
+    if (Array.isArray(children)) {
+      children.forEach((c: string) => allChildren.add(c))
     }
   })
 
-  allSegments.forEach(segment => {
-    if (!allChildren.has(segment) && !hierarchy[segment]) {
-      firstLevelSegments.push(segment)
+  // If we found children from hierarchy, return those
+  if (allChildren.size > 0) {
+    return Array.from(allChildren).sort()
+  }
+
+  // Final fallback: extract unique segment names from actual data records
+  const records = data.data.value.geography_segment_matrix
+  const segmentNames = new Set<string>()
+  records.forEach(r => {
+    if (r.segment_type === segmentType) {
+      segmentNames.add(r.segment)
     }
   })
+  if (segmentNames.size > 0) {
+    return Array.from(segmentNames).sort()
+  }
 
-  return firstLevelSegments.sort()
+  return [...allSegments]
 }
 
 /**
