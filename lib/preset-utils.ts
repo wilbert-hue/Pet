@@ -14,7 +14,7 @@ import type { ComparisonData, DataRecord, FilterState } from './types'
  */
 export function getTopRegionsByMarketValue(
   data: ComparisonData | null,
-  year: number = 2023,
+  year: number = 2025,
   topN: number = 3
 ): string[] {
   if (!data) return []
@@ -200,18 +200,20 @@ export function getTopCountriesByCAGR(
  * @returns Partial FilterState with dynamic values
  */
 export function createTopMarketFilters(data: ComparisonData | null): Partial<FilterState> {
-  const topRegions = getTopRegionsByMarketValue(data, 2023, 3)
+  const startYear = data?.metadata?.start_year ?? 2025
+  const endYear = data?.metadata?.forecast_year ?? 2033
+  const topRegions = getTopRegionsByMarketValue(data, startYear, 3)
   const firstSegmentType = getFirstSegmentType(data)
   const firstLevelSegments = firstSegmentType
     ? getFirstLevelSegments(data, firstSegmentType)
     : []
 
   return {
-    viewMode: 'geography-mode', // Geography on X-axis, segments as series
+    viewMode: 'geography-mode',
     geographies: topRegions,
     segments: firstLevelSegments,
-    segmentType: firstSegmentType || 'By Technology',
-    yearRange: [2023, 2027],
+    segmentType: firstSegmentType || 'By Customer Type',
+    yearRange: [startYear, endYear],
     dataType: 'value'
   }
 }
@@ -221,13 +223,15 @@ export function createTopMarketFilters(data: ComparisonData | null): Partial<Fil
  * Identifies top 2 regions with highest CAGR and uses first segment type with all first-level segments
  */
 export function createGrowthLeadersFilters(data: ComparisonData | null): Partial<FilterState> {
+  const startYear = data?.metadata?.start_year ?? 2025
+  const endYear = data?.metadata?.forecast_year ?? 2033
+
   if (!data) return {
     viewMode: 'geography-mode',
-    yearRange: [2025, 2031],
+    yearRange: [startYear, endYear],
     dataType: 'value'
   }
 
-  // Get top 2 regions with highest CAGR
   const topRegions = getTopRegionsByCAGR(data, 2)
   const firstSegmentType = getFirstSegmentType(data)
   const firstLevelSegments = firstSegmentType
@@ -235,11 +239,11 @@ export function createGrowthLeadersFilters(data: ComparisonData | null): Partial
     : []
 
   return {
-    viewMode: 'geography-mode', // Geography on X-axis, segments as series
+    viewMode: 'geography-mode',
     geographies: topRegions,
     segments: firstLevelSegments,
-    segmentType: firstSegmentType || 'By Technology',
-    yearRange: [2025, 2031],
+    segmentType: firstSegmentType || 'By Customer Type',
+    yearRange: [startYear, endYear],
     dataType: 'value'
   }
 }
@@ -249,13 +253,15 @@ export function createGrowthLeadersFilters(data: ComparisonData | null): Partial
  * Identifies top 5 countries with highest CAGR and uses first segment type with all first-level segments
  */
 export function createEmergingMarketsFilters(data: ComparisonData | null): Partial<FilterState> {
+  const startYear = data?.metadata?.start_year ?? 2025
+  const endYear = data?.metadata?.forecast_year ?? 2033
+
   if (!data) return {
     viewMode: 'geography-mode',
-    yearRange: [2025, 2031],
+    yearRange: [startYear, endYear],
     dataType: 'value'
   }
 
-  // Get top 5 countries with highest CAGR
   const topCountries = getTopCountriesByCAGR(data, 5)
   const firstSegmentType = getFirstSegmentType(data)
   const firstLevelSegments = firstSegmentType
@@ -263,11 +269,11 @@ export function createEmergingMarketsFilters(data: ComparisonData | null): Parti
     : []
 
   return {
-    viewMode: 'geography-mode', // Geography on X-axis, segments as series
+    viewMode: 'geography-mode',
     geographies: topCountries,
     segments: firstLevelSegments,
-    segmentType: firstSegmentType || 'By Technology',
-    yearRange: [2025, 2031],
+    segmentType: firstSegmentType || 'By Customer Type',
+    yearRange: [startYear, endYear],
     dataType: 'value'
   }
 }

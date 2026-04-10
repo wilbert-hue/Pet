@@ -31,19 +31,21 @@ export function FilterPresets() {
 
   // Dynamically compute default presets based on actual data
   const defaultPresets = useMemo<FilterPreset[]>(() => {
-    // Create dynamic filters based on data
+    const startYear = data?.metadata?.start_year ?? 2025
+    const endYear = data?.metadata?.forecast_year ?? 2033
+
     const topMarketFilters = createTopMarketFilters(data)
     const growthLeadersFilters = createGrowthLeadersFilters(data)
     const emergingMarketsFilters = createEmergingMarketsFilters(data)
 
     return [
-  {
-    id: 'top-markets',
-    name: 'Top Markets',
-        description: 'Top 3 regions by 2023 market size',
-    icon: <Globe className="h-4 w-4" />,
+      {
+        id: 'top-markets',
+        name: 'Top Markets',
+        description: `Top 3 regions by ${startYear} market size`,
+        icon: <Globe className="h-4 w-4" />,
         filters: topMarketFilters
-  },
+      },
       {
         id: 'growth-leaders',
         name: 'Growth Leaders',
@@ -58,18 +60,18 @@ export function FilterPresets() {
         icon: <Target className="h-4 w-4" />,
         filters: emergingMarketsFilters
       },
-  {
-    id: 'full-comparison',
-    name: 'Full Comparison',
-    description: 'All regions and segments matrix view',
-    icon: <BarChart3 className="h-4 w-4" />,
-    filters: {
-      viewMode: 'matrix',
-      yearRange: [2023, 2027],
-      dataType: 'value',
-    }
-  },
-]
+      {
+        id: 'full-comparison',
+        name: 'Full Comparison',
+        description: 'All regions and segments matrix view',
+        icon: <BarChart3 className="h-4 w-4" />,
+        filters: {
+          viewMode: 'matrix',
+          yearRange: [startYear, endYear],
+          dataType: 'value',
+        }
+      },
+    ]
   }, [data])
 
   const applyPreset = (preset: FilterPreset) => {
