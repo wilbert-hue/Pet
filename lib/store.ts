@@ -85,7 +85,6 @@ function getDefaultFilters(data: ComparisonData | null): FilterState {
 
   const firstSegmentType = Object.keys(data.dimensions.segments)[0] || ''
   const startYear = data.metadata.start_year
-  const baseYear = data.metadata.base_year
   const forecastYear = data.metadata.forecast_year
   
   // Get first geography for default view
@@ -94,6 +93,13 @@ function getDefaultFilters(data: ComparisonData | null): FilterState {
   // Get first few segments from the first segment type (for default view)
   const segmentDimension = data.dimensions.segments[firstSegmentType]
   const firstSegments = segmentDimension?.items?.slice(0, 3) || []
+  
+  // Build advancedSegments to match segments (charts read from advancedSegments)
+  const firstAdvancedSegments = firstSegments.map((segment: string) => ({
+    type: firstSegmentType,
+    segment,
+    id: `${firstSegmentType}::${segment}`
+  }))
   
   // Set default business type only if B2B/B2C exists
   let defaultBusinessType: 'B2B' | 'B2C' | undefined = undefined
@@ -105,13 +111,14 @@ function getDefaultFilters(data: ComparisonData | null): FilterState {
     geographies: firstGeography ? [firstGeography] : [],
     segments: firstSegments,
     segmentType: firstSegmentType,
-    yearRange: [baseYear, Math.min(baseYear + 4, forecastYear)],
+    yearRange: [startYear, forecastYear],
     dataType: 'value',
     viewMode: 'segment-mode',
     businessType: defaultBusinessType,
-    aggregationLevel: null, // Automatic - determined by selected segments
+    aggregationLevel: null,
     showLevel1Totals: false,
-  }
+    advancedSegments: firstAdvancedSegments,
+  } as any
 }
 
 // Helper function to get default opportunity matrix filters
